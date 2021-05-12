@@ -1,7 +1,7 @@
 import { Course } from './../model/course';
 import {Component, OnInit} from '@angular/core';
 import {interval, noop, Observable, of, timer} from 'rxjs';
-import {catchError, delayWhen, map, retryWhen, shareReplay, tap} from 'rxjs/operators';
+import {catchError, delayWhen, map, retryWhen, shareReplay, tap, filter} from 'rxjs/operators';
 import { createHttpObservable } from '../common/util';
 
 
@@ -11,28 +11,40 @@ import { createHttpObservable } from '../common/util';
   styleUrls: ["./home.component.css"],
 })
 export class HomeComponent implements OnInit {
-  beginnersCourses: Course[];
-  advancedCourses: Course[];
+  beginnersCourses$: Observable<Course[]>;
+  advancedCourses$: Observable<Course[]>;
   constructor() {}
 
   ngOnInit() {
     const http$ = createHttpObservable('/api/courses');
     const courses$ = http$
         .pipe(
-          map(res => res['payload'])
+          tap(() => console.log("HTTP request executed")),
+          map(res => res['payload']),
+          shareReplay()
         );
 
-    courses$.subscribe(
-      (courses) => {
-        this.beginnersCourses = courses.filter(
-          (course) => course.category == 'BEGINNER');
-
-        this.advancedCourses = courses.filter(
-          (course) => course.category == 'ADVANCED'
-        );
-      },
-      noop,
-      () => console.log("completed")
+    this.beginnersCourses$ = courses$.pipe(
+      map((courses) =>
+        courses.filter((course) => course.category == "BEGINNER")
+      )
     );
+    this.advancedCourses$ = courses$.pipe(
+      map((courses) =>
+        courses.filter((course) => course.category == "ADVANCED")
+      )
+    );
+    // courses$.subscribe(
+    //   (courses) => {
+    //     this.beginnersCourses = courses.filter(
+    //       (course) => course.category == 'BEGINNER');
+
+    //     this.advancedCourses = courses.filter(
+    //       (course) => course.category == 'ADVANCED'
+    //     );
+    //   },
+    //   noop,
+    //   () => console.log("completed")
+    // );
   }
 }

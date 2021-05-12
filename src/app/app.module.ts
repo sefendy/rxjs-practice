@@ -28,6 +28,7 @@ import {HttpClientModule} from "@angular/common/http";
 import { CourseDialogComponent } from './course-dialog/course-dialog.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatMomentDateModule} from "@angular/material-moment-adapter";
+import { CommonModule } from '@angular/common';
 
 @NgModule({
     declarations: [
@@ -60,7 +61,8 @@ import {MatMomentDateModule} from "@angular/material-moment-adapter";
         MatSelectModule,
         MatDatepickerModule,
         MatMomentDateModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        CommonModule
     ],
     providers: [
 
